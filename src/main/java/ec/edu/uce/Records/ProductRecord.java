@@ -48,10 +48,10 @@ public class ProductRecord {
         this.price = price;
     }
 
-    public  String getdata(){
-        return String.format("ID: %s\nName: %s\nQuantity: %d\nPrice: %.2f",
-                this.productID, this.productName, (int)this.quantity, this.price);
-    }
+    //public  String getdata(){
+      //  return String.format("ID: %s\nName: %s\nQuantity: %d\nPrice: %.2f",
+       //         this.productID, this.productName, (int)this.quantity, this.price);
+    //}
 
 
 

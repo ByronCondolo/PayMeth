@@ -1,6 +1,9 @@
 package ec.edu.uce.jpa;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+
+import java.util.List;
 
 public class ProductService {
     private EntityManager em;
@@ -20,6 +23,11 @@ public class ProductService {
     public Product findByID(int id) {
 
         return em.find(Product.class, id);
+    }
+
+    public List<Product> findAll() {
+        TypedQuery<Product> query = em.createQuery("select p from Product p", Product.class);
+        return query.getResultList();
     }
 
 

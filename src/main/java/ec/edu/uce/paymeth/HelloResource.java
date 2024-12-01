@@ -15,7 +15,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -54,65 +56,112 @@ public class HelloResource {
 
 
     @GET
-    @Produces
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/Product")
-    public String product(@QueryParam("name") String name, @QueryParam("quantity") int quantity, @QueryParam("price") double price) {
+    public Response product(@QueryParam("name") String name, @QueryParam("quantity") int quantity, @QueryParam("price") double price) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
         EntityManager em = emf.createEntityManager();
         ProductService productService = new ProductService(em);
-        Product product;
-        //create
-        em.getTransaction().begin();
-        product = productService.createProduct(name,quantity,price);
-        em.getTransaction().commit();
 
-        //read
-        //product= productService.findByID(1);
+        try {
+            // Crear producto
+            if (name!=null)
+            {
+                em.getTransaction().begin();
+                Product product = productService.createProduct(name, quantity, price);
+                em.getTransaction().commit();
+            }
+            // Buscar todos los productos
+            List<Product> products = productService.findAll();
 
-        productRec.setProductID(product.getId());
-        productRec.setProductName(product.getName());
-        productRec.setPrice(product.getPrice());
-        productRec.setQuantity(product.getQuantity());
+            // Crear una lista para almacenar los ProductRecord
+            List<ProductRecord> productList = new ArrayList<>();
+            // Iterar sobre los productos y agregar a la lista
+            for (Product p : products) {
+                // Crear una nueva instancia de ProductRecord
+                ProductRecord newProductRec = new ProductRecord();
+                newProductRec.setProductID(p.getId());
+                newProductRec.setProductName(p.getName());
+                newProductRec.setQuantity(p.getQuantity());
+                newProductRec.setPrice(p.getPrice());
+                // Agregar el nuevo ProductRecord a la lista
+                productList.add(newProductRec);
+            }
 
-        return productRec.getdata();
+            // Retornar la lista de ProductRecord como respuesta en formato JSON
+            return Response.ok(productList).build();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback(); // Revertir si hay algún error
+            }
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error al procesar la solicitud").build();
+        } finally {
+            // Cerrar el EntityManager y EntityManagerFactory para liberar los recursos
+            if (em != null) {
+                em.close();
+            }
+            if (emf != null) {
+                emf.close();
+            }
+        }
     }
 
 
 
     @GET
-    @Produces("text/plain")
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/Client")
-    public String emailNotification(@QueryParam("ci") int ci, @QueryParam("name") String name,@QueryParam("email") String email, @QueryParam("phone") String phone, @QueryParam("bank_account") String bank_account) {
+    public Response emailNotification(@QueryParam("ci") int ci, @QueryParam("name") String name,@QueryParam("email") String email, @QueryParam("phone") String phone, @QueryParam("bank_account") String bank_account) {
         //entity manager factoy
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
         EntityManager em = emf.createEntityManager();
 
         //create students services
         ClientService clientService = new ClientService(em);
-        Client client;
+        try {
+            // Crear producto
+            if (name!=null)
+            {
+                em.getTransaction().begin();
+                Client client = clientService.createClient(ci, name, email, phone, bank_account);
+                em.getTransaction().commit();
+            }
+            // Buscar todos los productos
+            List<Client> clients = clientService.findAll();
 
-        //create
-        em.getTransaction().begin();
-        client = clientService.createClient(ci, name, email, phone, bank_account);
-        em.getTransaction().commit();
+            // Crear una lista para almacenar los ProductRecord
+            List<ClientRecord> clientList = new ArrayList<>();
+            // Iterar sobre los productos y agregar a la lista
+            for (Client c : clients) {
+                // Crear una nueva instancia de ProductRecord
+                ClientRecord newClientRec = new ClientRecord();
+                newClientRec.setCi(c.getCi());
+                newClientRec.setName(c.getName());
+                newClientRec.setEmail(c.getEmail());
+                newClientRec.setPhone(c.getPhone());
+                newClientRec.setBank_account(c.getBank_account());
+                // Agregar el nuevo ProductRecord a la lista
+                clientList.add(newClientRec);
+            }
+            // Retornar la lista de ProductRecord como respuesta en formato JSON
+            return Response.ok(clientList).build();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback(); // Revertir si hay algún error
+            }
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error al procesar la solicitud").build();
+        } finally {
+            // Cerrar el EntityManager y EntityManagerFactory para liberar los recursos
+            if (em != null) {
+                em.close();
+            }
+            if (emf != null) {
+                emf.close();
+            }
+        }
 
-
-        //read
-        //client= clientService.findByID(1672839302);
-
-        //update
-        //student.setName("nuevoUsuario");
-        //studentService.updateStudent(student);
-
-        //studentService.delete(1);
-
-        clientRec.setCi(client.getCi());
-        clientRec.setName(client.getName());
-        clientRec.setEmail(client.getEmail());
-        clientRec.setPhone(client.getPhone());
-        clientRec.setBank_account(client.getBank_account());
-
-        return clientRec.getdata();
     }
 
 

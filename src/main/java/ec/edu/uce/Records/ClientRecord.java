@@ -59,10 +59,6 @@ public class ClientRecord {
         this.bank_account = bank_account;
     }
 
-    public  String getdata(){
-        return String.format("CI: %d \nName: %s \nPhone: %s \nEmail: %s \nBank_Account: %s",
-                this.ci, this.name, this.phone, this.email, this.bank_account);
-    }
 
 
 }

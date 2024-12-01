@@ -1,6 +1,9 @@
 package ec.edu.uce.jpa;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+
+import java.util.List;
 
 public class ClientService {
 
@@ -38,5 +41,8 @@ public class ClientService {
         em.remove(student);
         em.getTransaction().commit();
     }
-
+    public List<Client> findAll() {
+        TypedQuery<Client> query = em.createQuery("SELECT c FROM Client c", Client.class);
+        return query.getResultList();
+    }
 }
