@@ -1,30 +1,22 @@
-package ec.edu.uce.jpa;
+package ec.edu.uce.Records;
 
+import ec.edu.uce.interfaces.QualifierPayment;
+import jakarta.ejb.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
-//POJO plain old java object
-@Entity
-@Table(name = "persistence_user")
-public class Client {
-    @Id
-    @Column(name = "Client_ci")
+@ApplicationScoped
+@Singleton
+@QualifierPayment("clientRec")
+public class ClientRecord {
     private int ci;
-    @Column(name = "Client_name")
     private String name;
-    @Column(name = "Client_email")
     private String email;
-    @Column(name = "Client_phone")
     private String phone;
-    @Column(name = "Client_bank_account")
     private String bank_account;
 
-
-    //constructor por defecto y getters and set minimo
-    public Client(){
-
+    public ClientRecord() {
     }
 
     public int getCi() {
@@ -43,20 +35,20 @@ public class Client {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getPhone() {
         return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getBank_account() {
@@ -66,4 +58,11 @@ public class Client {
     public void setBank_account(String bank_account) {
         this.bank_account = bank_account;
     }
+
+    public  String getdata(){
+        return String.format("CI: %d \nName: %s \nPhone: %s \nEmail: %s \nBank_Account: %s",
+                this.ci, this.name, this.phone, this.email, this.bank_account);
+    }
+
+
 }

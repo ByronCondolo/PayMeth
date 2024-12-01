@@ -1,5 +1,6 @@
 package ec.edu.uce.paymeth;
 
+import ec.edu.uce.Records.ClientRecord;
 import ec.edu.uce.Records.ProductRecord;
 import ec.edu.uce.interfaces.IPay;
 import ec.edu.uce.interfaces.QualifierPayment;
@@ -25,6 +26,10 @@ public class HelloResource {
     @Inject
     @QualifierPayment("productRec")
     ProductRecord productRec;
+
+    @Inject
+    @QualifierPayment("clientRec")
+    ClientRecord clientRec;
 
     @Inject
     @QualifierPayment("card")
@@ -72,8 +77,8 @@ public class HelloResource {
 
     @GET
     @Produces("text/plain")
-    @Path("/card")
-    public String emailNotification() {
+    @Path("/Client")
+    public String emailNotification(@QueryParam("ci") int ci, @QueryParam("name") String name,@QueryParam("email") String email, @QueryParam("phone") String phone, @QueryParam("bank_account") String bank_account) {
         //entity manager factoy
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
         EntityManager em = emf.createEntityManager();
@@ -83,13 +88,11 @@ public class HelloResource {
 
         //create
         //em.getTransaction().begin();
-        //clientService.createClient("Nombre del Cliente",5);
+        //clientService.createClient(ci, name, email, phone, bank_account);
         //em.getTransaction().commit();
 
         //read
-        Client client= clientService.findByID(4);
-
-
+        Client client= clientService.findByID(1672839302);
 
         //update
         //student.setName("nuevoUsuario");
@@ -97,16 +100,13 @@ public class HelloResource {
 
         //studentService.delete(1);
 
-        MessageService messageService = new MessageService(em);
-        Messege messege = new Messege();
-        messege.setMessage("esto es una prueba");
-        messageService.create(messege);
+        clientRec.setCi(client.getCi());
+        clientRec.setName(client.getName());
+        clientRec.setEmail(client.getEmail());
+        clientRec.setPhone(client.getPhone());
+        clientRec.setBank_account(client.getBank_account());
 
-        paymentRec.setFrom(client.getName());
-        paymentRec.setTo(String.valueOf(client.getId()));
-        paymentRec.setMessage(client.getName());
-
-        return cardPay.sendPayNotify(paymentRec, "card pay");
+        return clientRec.getdata();
     }
 
     @GET

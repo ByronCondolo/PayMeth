@@ -9,17 +9,20 @@ public class ClientService {
         this.em = em;
     }
 
-    public Client createClient(String name, int id) {
+    public Client createClient(int ci,String name, String email, String phone, String bank_account) {
         Client client = new Client();
-        client.setId(id);
+        client.setCi(ci);
         client.setName(name);
+        client.setEmail(email);
+        client.setPhone(phone);
+        client.setBank_account(bank_account);
         em.persist(client);//actualiza todos los datos
         return client;
     }
 
-    public Client findByID(int id) {
+    public Client findByID(int ci) {
 
-        return em.find(Client.class, id);
+        return em.find(Client.class, ci);
     }
 
 
@@ -29,8 +32,8 @@ public class ClientService {
         em.getTransaction().commit();
     }
 
-    public void delete(int id) {
-        Client student = findByID(id);
+    public void delete(int ci) {
+        Client student = findByID(ci);
         em.getTransaction().begin();
         em.remove(student);
         em.getTransaction().commit();
