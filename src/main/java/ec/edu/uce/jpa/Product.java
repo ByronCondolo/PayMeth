@@ -12,9 +12,9 @@ public class Product {
     @Column(name = "Name_Product")
     private String name;
     @Column(name = "Quantity_Product")
-    private String quantity;
+    private int quantity;
     @Column(name = "Price_Product")
-    private int price;
+    private double price;
 
     public Product() {
     }
@@ -35,19 +35,19 @@ public class Product {
         this.name = name;
     }
 
-    public String getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 }

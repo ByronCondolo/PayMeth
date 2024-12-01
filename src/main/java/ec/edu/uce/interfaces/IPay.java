@@ -1,6 +1,6 @@
 package ec.edu.uce.interfaces;
 
-import ec.edu.uce.classes.Record;
+import ec.edu.uce.Records.Record;
 
 public interface IPay {
 

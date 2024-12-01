@@ -1,11 +1,13 @@
-package ec.edu.uce.classes;
+package ec.edu.uce.Records;
 
+import ec.edu.uce.interfaces.QualifierPayment;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Singleton;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 @Singleton
+@QualifierPayment("paymentRec")
     public class Record {
         private String from;
         private String to;

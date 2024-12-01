@@ -8,7 +8,7 @@ public class ProductService {
         this.em = em;
     }
 
-    public Product createProduct(String name, String quantity, int price) {
+    public Product createProduct(String name, int quantity, double price) {
         Product product = new Product();
         product.setName(name);
         product.setQuantity(quantity);
@@ -17,9 +17,9 @@ public class ProductService {
         return product;
     }
 
-    public Product findByName(String name) {
+    public Product findByID(int id) {
 
-        return em.find(Product.class, name);
+        return em.find(Product.class, id);
     }
 
 
@@ -29,8 +29,8 @@ public class ProductService {
         em.getTransaction().commit();
     }
 
-    public void delete(String name) {
-        Product product = findByName(name);
+    public void delete(int id) {
+        Product product = findByID(id);
         em.getTransaction().begin();
         em.remove(product);
         em.getTransaction().commit();

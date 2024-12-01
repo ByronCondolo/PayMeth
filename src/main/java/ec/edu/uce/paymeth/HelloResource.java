@@ -1,12 +1,10 @@
 package ec.edu.uce.paymeth;
 
+import ec.edu.uce.Records.ProductRecord;
 import ec.edu.uce.interfaces.IPay;
 import ec.edu.uce.interfaces.QualifierPayment;
-import ec.edu.uce.classes.Record;
-import ec.edu.uce.jpa.Client;
-import ec.edu.uce.jpa.MessageService;
-import ec.edu.uce.jpa.Messege;
-import ec.edu.uce.jpa.ClientService;
+import ec.edu.uce.Records.Record;
+import ec.edu.uce.jpa.*;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -14,13 +12,19 @@ import jakarta.persistence.Persistence;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 
 
 @Path("/app")
 public class HelloResource {
 
     @Inject
-    Record record;
+    @QualifierPayment("paymentRec")
+    Record paymentRec;
+
+    @Inject
+    @QualifierPayment("productRec")
+    ProductRecord productRec;
 
     @Inject
     @QualifierPayment("card")
@@ -44,6 +48,25 @@ public class HelloResource {
     @GET
     @Produces
     @Path("/Product")
+    public String product(@QueryParam("name") String name, @QueryParam("quantity") int quantity, @QueryParam("price") double price) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
+        EntityManager em = emf.createEntityManager();
+        ProductService productService = new ProductService(em);
+        //create
+        //em.getTransaction().begin();
+        //productService.createProduct(name,quantity,price);
+        //em.getTransaction().commit();
+
+        //read
+        Product product= productService.findByID(1);
+
+        productRec.setProductID(product.getId());
+        productRec.setProductName(product.getName());
+        productRec.setPrice(product.getPrice());
+        productRec.setQuantity(product.getQuantity());
+
+        return productRec.getdata();
+    }
 
 
 
@@ -52,7 +75,7 @@ public class HelloResource {
     @Path("/card")
     public String emailNotification() {
         //entity manager factoy
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("Cliente");
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
         EntityManager em = emf.createEntityManager();
 
         //create students services
@@ -79,18 +102,18 @@ public class HelloResource {
         messege.setMessage("esto es una prueba");
         messageService.create(messege);
 
-        record.setFrom(client.getName());
-        record.setTo(String.valueOf(client.getId()));
-        record.setMessage(client.getName());
+        paymentRec.setFrom(client.getName());
+        paymentRec.setTo(String.valueOf(client.getId()));
+        paymentRec.setMessage(client.getName());
 
-        return cardPay.sendPayNotify(record, "card pay");
+        return cardPay.sendPayNotify(paymentRec, "card pay");
     }
 
     @GET
     @Produces("text/plain")
     @Path("/paypal")
     public String SMSNotification() {
-        return paypalPay.sendPayNotify(record, "paypal pay");
+        return paypalPay.sendPayNotify(paymentRec, "paypal pay");
 
     }
 
@@ -98,7 +121,7 @@ public class HelloResource {
     @Produces("text/plain")
     @Path("/transfer")
     public String pushNotification() {
-        return transferPay.sendPayNotify(record,"transfer pay");
+        return transferPay.sendPayNotify(paymentRec,"transfer pay");
 
     }
 

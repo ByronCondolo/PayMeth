@@ -1,5 +1,6 @@
 package ec.edu.uce.classes;
 
+import ec.edu.uce.Records.Record;
 import ec.edu.uce.interfaces.IPay;
 import ec.edu.uce.interfaces.QualifierPayment;
 import jakarta.enterprise.context.ApplicationScoped;
