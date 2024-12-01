@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+version="3.0">
+
+    <persistence-unit name="Cliente" transaction-type="RESOURCE_LOCAL">
+        <class>ec.edu.uce.jpa.Client</class> <!-- Asegúrate de que esta clase esté correctamente referenciada -->
+        <class>ec.edu.uce.jpa.Messege</class>
+        <properties>
+            <!-- Configuración JDBC para PostgreSQL -->
+            <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver" />
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/postgres" />
+            <property name="jakarta.persistence.jdbc.user" value="postgres" />
+            <property name="jakarta.persistence.jdbc.password" value="postgres" />
+
+            <!-- Configuración de Hibernate -->
+            <property name="hibernate.hbm2ddl.auto" value="update" /> <!-- Modificar si es necesario -->
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="true" />
+            <property name="logger.org.hibernate.level" value="DEBUG"/>
+
+        </properties>
+    </persistence-unit>
+</persistence>
