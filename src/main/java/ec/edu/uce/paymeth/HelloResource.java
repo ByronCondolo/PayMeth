@@ -14,6 +14,9 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+
+import java.util.List;
 
 
 @Path("/app")
@@ -57,13 +60,14 @@ public class HelloResource {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
         EntityManager em = emf.createEntityManager();
         ProductService productService = new ProductService(em);
+        Product product;
         //create
-        //em.getTransaction().begin();
-        //productService.createProduct(name,quantity,price);
-        //em.getTransaction().commit();
+        em.getTransaction().begin();
+        product = productService.createProduct(name,quantity,price);
+        em.getTransaction().commit();
 
         //read
-        Product product= productService.findByID(1);
+        //product= productService.findByID(1);
 
         productRec.setProductID(product.getId());
         productRec.setProductName(product.getName());
@@ -85,14 +89,16 @@ public class HelloResource {
 
         //create students services
         ClientService clientService = new ClientService(em);
+        Client client;
 
         //create
-        //em.getTransaction().begin();
-        //clientService.createClient(ci, name, email, phone, bank_account);
-        //em.getTransaction().commit();
+        em.getTransaction().begin();
+        client = clientService.createClient(ci, name, email, phone, bank_account);
+        em.getTransaction().commit();
+
 
         //read
-        Client client= clientService.findByID(1672839302);
+        //client= clientService.findByID(1672839302);
 
         //update
         //student.setName("nuevoUsuario");
@@ -109,6 +115,8 @@ public class HelloResource {
         return clientRec.getdata();
     }
 
+
+
     @GET
     @Produces("text/plain")
     @Path("/paypal")
@@ -124,6 +132,8 @@ public class HelloResource {
         return transferPay.sendPayNotify(paymentRec,"transfer pay");
 
     }
+
+
 
 }
 
