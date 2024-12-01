@@ -9,12 +9,12 @@ public class ClientService {
         this.em = em;
     }
 
-    public Client createStudent(String name, int id) {
-        Client student = new Client();
-        student.setId(id);
-        student.setName(name);
-        em.persist(student);//actualiza todos los datos
-        return student;
+    public Client createClient(String name, int id) {
+        Client client = new Client();
+        client.setId(id);
+        client.setName(name);
+        em.persist(client);//actualiza todos los datos
+        return client;
     }
 
     public Client findByID(int id) {

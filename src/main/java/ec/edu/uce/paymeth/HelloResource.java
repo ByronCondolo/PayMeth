@@ -3,6 +3,7 @@ package ec.edu.uce.paymeth;
 import ec.edu.uce.interfaces.IPay;
 import ec.edu.uce.interfaces.QualifierPayment;
 import ec.edu.uce.classes.Record;
+import ec.edu.uce.jpa.Client;
 import ec.edu.uce.jpa.MessageService;
 import ec.edu.uce.jpa.Messege;
 import ec.edu.uce.jpa.ClientService;
@@ -39,6 +40,13 @@ public class HelloResource {
         return "Hello, World!";
     }
 
+
+    @GET
+    @Produces
+    @Path("/Product")
+
+
+
     @GET
     @Produces("text/plain")
     @Path("/card")
@@ -48,15 +56,15 @@ public class HelloResource {
         EntityManager em = emf.createEntityManager();
 
         //create students services
-        ClientService studentService = new ClientService(em);
+        ClientService clientService = new ClientService(em);
 
         //create
-        em.getTransaction().begin();
-        studentService.createStudent("Nombre del Cliente",4);
-        em.getTransaction().commit();
+        //em.getTransaction().begin();
+        //clientService.createClient("Nombre del Cliente",5);
+        //em.getTransaction().commit();
 
         //read
-        //Student student= studentService.findByID(1);
+        Client client= clientService.findByID(4);
 
 
 
@@ -71,10 +79,9 @@ public class HelloResource {
         messege.setMessage("esto es una prueba");
         messageService.create(messege);
 
-
-        //record.setTo(String.valueOf(student.getId()));
-        //record.setMessage(student.getName());
-
+        record.setFrom(client.getName());
+        record.setTo(String.valueOf(client.getId()));
+        record.setMessage(client.getName());
 
         return cardPay.sendPayNotify(record, "card pay");
     }
