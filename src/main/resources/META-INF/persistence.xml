@@ -5,9 +5,9 @@ xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml
 version="3.0">
 
     <persistence-unit name="paymeth" transaction-type="RESOURCE_LOCAL">
-        <class>ec.edu.uce.jpa.Client</class> <!-- Asegúrate de que esta clase esté correctamente referenciada -->
-        <class>ec.edu.uce.jpa.Messege</class>
+        <class>ec.edu.uce.jpa.Client</class>
         <class>ec.edu.uce.jpa.Product</class>
+        <class>ec.edu.uce.jpa.Account</class>
         <properties>
             <!-- Configuración JDBC para PostgreSQL -->
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver" />
