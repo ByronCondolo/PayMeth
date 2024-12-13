@@ -11,13 +11,10 @@ public class ProductService {
         this.em = em;
     }
 
-    public Product createProduct(String name, int quantity, double price) {
-        Product product = new Product();
-        product.setName(name);
-        product.setQuantity(quantity);
-        product.setPrice(price);
+    public void createProduct(Product product) {
+        em.getTransaction().begin();
         em.persist(product);//actualiza todos los datos
-        return product;
+        em.getTransaction().commit();
     }
 
     public Product findByID(int id) {

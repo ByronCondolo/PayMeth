@@ -63,19 +63,20 @@ public class HelloResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/Product")
-    public Response product(@QueryParam("name") String name, @QueryParam("quantity") int quantity, @QueryParam("price") double price) {
+    public Response product(@QueryParam("name") String name,
+                            @QueryParam("quantity") int quantity,
+                            @QueryParam("price") double price) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
         EntityManager em = emf.createEntityManager();
         ProductService productService = new ProductService(em);
 
         try {
-            // Crear producto
-            if (name!=null)
-            {
-                em.getTransaction().begin();
-                Product product = productService.createProduct(name, quantity, price);
-                em.getTransaction().commit();
-            }
+            Product product = new Product();
+            product.setName(name != null ? name : "Jamon");
+            product.setQuantity(quantity !=0 ? quantity : 12);
+            product.setPrice(price != 0 ? price : 12.23);
+            productService.createProduct(product);
+
             // Buscar todos los productos
             List<Product> products = productService.findAll();
 
