@@ -117,89 +117,69 @@ public class HelloResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/Client")
-    public Response emailNotification(@QueryParam("ci") int ci, @QueryParam("name") String name, @QueryParam("email") String email, @QueryParam("phone") String phone, @QueryParam("bank_account") String bank_account) {
-        // Crear EntityManager y EntityManagerFactory
+    public Response saveNewClient(
+            @QueryParam("ci") Integer ci,
+            @QueryParam("name") String name,
+            @QueryParam("email") String email,
+            @QueryParam("phone") String phone,
+            @QueryParam("bank_account") String bank_account,
+            @QueryParam("bank_type") String bank_type) {
+
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
         EntityManager em = emf.createEntityManager();
 
-        // Crear el servicio de cliente
         ClientService clientService = new ClientService(em);
         try {
-            // Crear un nuevo cliente y asignar datos de ejemplo
             Client client = new Client();
-            client.setCi(ci != 0 ? ci: 25656846);
-            client.setName(name != null ? name : "Jose"); // Si no se pasa nombre, usamos "alex"
-            client.setEmail(email != null ? email : "example@uce.com"); // Si no se pasa email, usamos uno por defecto
-            client.setPhone(phone != null ? phone : "11565484"); // Si no se pasa teléfono, usamos uno por defecto
+            client.setCi(ci != null ? ci : 25653445);
+            client.setName(name != null ? name : "Jose");
+            client.setEmail(email != null ? email : "example@uce.com");
+            client.setPhone(phone != null ? phone : "11565484");
 
-            // Crear una cuenta asociada al cliente
             Account account = new Account();
-            account.setNumber(bank_account != null ? bank_account : "156518"); // Si no se pasa cuenta, usamos una por defecto
-            account.setType("bank");
+            account.setNumber(bank_account != null ? bank_account : "156518");
+            account.setType(bank_type !=null ? bank_type:"Pichincha");
 
-            // Añadir la cuenta a la lista de cuentas del cliente
             List<Account> accounts = new ArrayList<>();
             accounts.add(account);
             client.setAccounts(accounts);
 
-            // Crear el cliente y sus cuentas en la base de datos
             clientService.createClientWhitAccount(client, account);
 
-            // Obtener todos los clientes con cuentas asociadas
             List<Client> clients = clientService.findAll();
-
-            // Crear una lista para almacenar los ClientRecord con los datos de Account
             List<ClientRecord> clientList = new ArrayList<>();
 
-            // Iterar sobre los clientes
             for (Client c : clients) {
-                // Crear una nueva instancia de ClientRecord
                 ClientRecord newClientRec = new ClientRecord();
                 newClientRec.setCi(c.getCi());
                 newClientRec.setName(c.getName());
                 newClientRec.setEmail(c.getEmail());
                 newClientRec.setPhone(c.getPhone());
 
-                // Si el cliente tiene cuentas, agregarlas a la lista (suponiendo que las cuentas son parte de la entidad Client)
-                List<Account> accounts1 = c.getAccounts(); // Aquí estamos accediendo a las cuentas del cliente
                 List<AccountRecord> accountList = new ArrayList<>();
-
-                // Iterar sobre las cuentas del cliente y convertirlas en AccountRecord
-                for (Account a : accounts1) {
+                for (Account a : c.getAccounts()) {
                     AccountRecord accountRec = new AccountRecord();
                     accountRec.setId(a.getId());
                     accountRec.setNumber(a.getNumber());
                     accountRec.setType(a.getType());
-
-                    // Agregar la cuenta a la lista
                     accountList.add(accountRec);
                 }
 
-                // Establecer la lista de cuentas en el ClientRecord
-                newClientRec.setAccounts(accounts1);
-
-                // Agregar el nuevo ClientRecord a la lista
+                newClientRec.setAccounts(c.getAccounts());
                 clientList.add(newClientRec);
             }
 
-            // Retornar la lista de ClientRecord como respuesta en formato JSON
             return Response.ok(clientList).build();
 
         } catch (Exception e) {
-            // Manejo de errores y rollback en caso de fallo
             if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback(); // Revertir si hay algún error
+                em.getTransaction().rollback();
             }
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error al procesar la solicitud").build();
         } finally {
-            // Cerrar el EntityManager y EntityManagerFactory para liberar los recursos
-            if (em != null) {
-                em.close();
-            }
-            if (emf != null) {
-                emf.close();
-            }
+            if (em != null) em.close();
+            if (emf != null) emf.close();
         }
     }
 
