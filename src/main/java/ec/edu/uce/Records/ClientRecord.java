@@ -1,10 +1,13 @@
 package ec.edu.uce.Records;
 
 import ec.edu.uce.interfaces.QualifierPayment;
+import ec.edu.uce.jpa.Account;
 import jakarta.ejb.Singleton;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
+
+import java.util.List;
 
 @ApplicationScoped
 @Singleton
@@ -14,7 +17,7 @@ public class ClientRecord {
     private String name;
     private String email;
     private String phone;
-    private String bank_account;
+    private List<Account> accounts;
 
     public ClientRecord() {
     }
@@ -51,14 +54,11 @@ public class ClientRecord {
         this.email = email;
     }
 
-    public String getBank_account() {
-        return bank_account;
+    public List<Account> getAccounts() {
+        return accounts;
     }
 
-    public void setBank_account(String bank_account) {
-        this.bank_account = bank_account;
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
     }
-
-
-
 }

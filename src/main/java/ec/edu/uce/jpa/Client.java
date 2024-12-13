@@ -1,9 +1,8 @@
 package ec.edu.uce.jpa;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 //POJO plain old java object
 @Entity
@@ -18,9 +17,10 @@ public class Client {
     private String email;
     @Column(name = "Client_phone")
     private String phone;
-    @Column(name = "Client_bank_account")
-    private String bank_account;
 
+    @OneToMany
+    @JoinColumn(name = "Client_Id")
+    List<Account> accounts;
 
     //constructor por defecto y getters and set minimo
     public Client(){
@@ -59,11 +59,11 @@ public class Client {
         this.phone = phone;
     }
 
-    public String getBank_account() {
-        return bank_account;
+    public List<Account> getAccounts() {
+        return accounts;
     }
 
-    public void setBank_account(String bank_account) {
-        this.bank_account = bank_account;
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
     }
 }

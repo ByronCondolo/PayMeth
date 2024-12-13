@@ -12,15 +12,11 @@ public class ClientService {
         this.em = em;
     }
 
-    public Client createClient(int ci,String name, String email, String phone, String bank_account) {
-        Client client = new Client();
-        client.setCi(ci);
-        client.setName(name);
-        client.setEmail(email);
-        client.setPhone(phone);
-        client.setBank_account(bank_account);
+    public void createClientWhitAccount(Client client,Account account) {
+        em.getTransaction().begin();
+        em.persist(account);
         em.persist(client);//actualiza todos los datos
-        return client;
+        em.getTransaction().commit();
     }
 
     public Client findByID(int ci) {
@@ -42,7 +38,11 @@ public class ClientService {
         em.getTransaction().commit();
     }
     public List<Client> findAll() {
-        TypedQuery<Client> query = em.createQuery("SELECT c FROM Client c", Client.class);
+        // Utilizamos un JOIN entre Client y Account
+        TypedQuery<Client> query = em.createQuery(
+                "SELECT c FROM Client c JOIN FETCH c.accounts", Client.class
+        );
         return query.getResultList();
     }
+
 }
