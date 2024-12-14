@@ -10,44 +10,53 @@ import jakarta.persistence.TypedQuery;
 import java.util.List;
 
 @ApplicationScoped
-@QualifierPayment("productService")
-public class ProductService {
+@QualifierPayment("invoiceService")
+public class InvoiceService {
     private EntityManager em ;
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
 
-    public ProductService() {
+    public InvoiceService() {
 
         this.em = emf.createEntityManager();
     }
 
-    public void createProduct(Product product) {
+    public void createInvoice(Invoice invoice) {
         em.getTransaction().begin();
-        em.persist(product);//actualiza todos los datos
+        em.persist(invoice);//actualiza todos los datos
         em.getTransaction().commit();
     }
 
-    public Product findByID(int id) {
+    public Invoice findByID(int id) {
 
-        return em.find(Product.class, id);
+        return em.find(Invoice.class, id);
     }
 
-    public List<Product> findAll() {
-        TypedQuery<Product> query = em.createQuery("select p from Product p", Product.class);
+
+    public List<Invoice> findAllInvoicesWithClients(Client client) {
+        TypedQuery<Invoice> query = em.createQuery(
+                "SELECT i FROM Invoice i JOIN FETCH i.client c WHERE c = :client",
+                Invoice.class
+        );
+        query.setParameter("client", client);
         return query.getResultList();
     }
 
-    public void updateProduct(Product product) {
+
+
+
+    public void updateProduct(Invoice invoice) {
         em.getTransaction().begin();
-        em.merge(product);
+        em.merge(invoice);
         em.getTransaction().commit();
     }
 
     public void delete(int id) {
-        Product product = findByID(id);
+        Invoice invoice = findByID(id);
         em.getTransaction().begin();
-        em.remove(product);
+        em.remove(invoice);
         em.getTransaction().commit();
     }
+
 
 
 }

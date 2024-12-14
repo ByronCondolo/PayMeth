@@ -5,13 +5,11 @@ import ec.edu.uce.interfaces.IPay;
 import ec.edu.uce.interfaces.QualifierPayment;
 import ec.edu.uce.jpa.*;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -25,6 +23,12 @@ public class HelloResource {
     @Inject
     @QualifierPayment("clientService")
     ClientService clientService;
+
+
+    @Inject
+    @QualifierPayment("invoiceService")
+    InvoiceService invoiceService;
+
 
     @Inject
     @QualifierPayment("paymentRec")
@@ -82,7 +86,14 @@ public class HelloResource {
             return Response.ok(productList).build();
     }
 
-
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/findClient/{id}")
+    public Response searchClienrt(@PathParam("id") int id) {
+        Client client = clientService.findByID(id);
+        ClientRecord clientRecord= impresiones.createClientRecord(client);
+        return Response.ok(clientRecord).build();
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -126,6 +137,13 @@ public class HelloResource {
     @Path("/paypal")
     public String paypal(@QueryParam("Client_ID") int clientID,@QueryParam("Products_ids") List<Integer> Products_ids) {
         if ((clientID ==0 || Products_ids == null) || (Products_ids==null && clientID==0)) {
+            Invoice invoice=new Invoice();
+            invoice.setDate(null);
+            invoice.setMethod_pay("paypal");
+            invoice.setClient(clientService.findByID(25));
+            invoiceService.createInvoice(invoice);
+
+
             return "http://localhost:8080/PayMeth-1.0-SNAPSHOT/api/app/paypal?Client_ID=25656846&Products_ids=752&Products_ids=652";
         }else {
             Client client= clientService.findByID(clientID);

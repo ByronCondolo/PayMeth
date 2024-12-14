@@ -22,6 +22,7 @@ public class Client {
     @JoinColumn(name = "Client_Id")
     List<Account> accounts;
 
+
     //constructor por defecto y getters and set minimo
     public Client(){
 
