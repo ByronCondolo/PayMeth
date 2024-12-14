@@ -1,16 +1,24 @@
 package ec.edu.uce.jpa;
 
+import ec.edu.uce.interfaces.QualifierPayment;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 
+@ApplicationScoped
+@QualifierPayment("clientService")
 public class ClientService {
 
-    private EntityManager em;
+    private EntityManager em ;
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
 
-    public ClientService(EntityManager em) {
-        this.em = em;
+    public ClientService() {
+
+        this.em = emf.createEntityManager();
     }
 
     public void createClientWhitAccount(Client client,Account account) {
