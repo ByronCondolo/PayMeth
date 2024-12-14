@@ -8,6 +8,7 @@ import java.util.List;
 public class ClientService {
 
     private EntityManager em;
+
     public ClientService(EntityManager em) {
         this.em = em;
     }

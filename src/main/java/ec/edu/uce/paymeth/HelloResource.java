@@ -23,8 +23,6 @@ public class HelloResource {
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
     private EntityManager em = emf.createEntityManager();
 
-
-
     @Inject
     @QualifierPayment("paymentRec")
     Record paymentRec;
@@ -34,12 +32,8 @@ public class HelloResource {
     ProductRecord productRec;
 
     @Inject
-    @QualifierPayment("clientRec")
-    ClientRecord clientRec;
-
-    @Inject
-    @QualifierPayment("accountRec")
-    AccountRecord accountRecord;
+    @QualifierPayment("impresiones")
+    Impresiones impresiones;
 
     @Inject
     @QualifierPayment("invoiceRec")
@@ -82,19 +76,7 @@ public class HelloResource {
             List<Product> products = productService.findAll();
 
             // Crear una lista para almacenar los ProductRecord
-            List<ProductRecord> productList = new ArrayList<>();
-            // Iterar sobre los productos y agregar a la lista
-            for (Product p : products) {
-                // Crear una nueva instancia de ProductRecord
-                ProductRecord newProductRec = new ProductRecord();
-                newProductRec.setProductID(p.getId());
-                newProductRec.setProductName(p.getName());
-                newProductRec.setQuantity(p.getQuantity());
-                newProductRec.setPrice(p.getPrice());
-                // Agregar el nuevo ProductRecord a la lista
-                productList.add(newProductRec);
-            }
-
+            List<ProductRecord> productList = impresiones.createProductRecord(products);
             // Retornar la lista de ProductRecord como respuesta en formato JSON
             return Response.ok(productList).build();
         } catch (Exception e) {
@@ -130,8 +112,8 @@ public class HelloResource {
         ClientService clientService = new ClientService(em);
         try {
             Client client = new Client();
-            client.setCi(ci != null ? ci : 25653445);
-            client.setName(name != null ? name : "Jose");
+            client.setCi(ci != null ? ci : 25);
+            client.setName(name != null ? name : "Robert0");
             client.setEmail(email != null ? email : "example@uce.com");
             client.setPhone(phone != null ? phone : "11565484");
 
@@ -149,27 +131,10 @@ public class HelloResource {
             List<ClientRecord> clientList = new ArrayList<>();
 
             for (Client c : clients) {
-                ClientRecord newClientRec = new ClientRecord();
-                newClientRec.setCi(c.getCi());
-                newClientRec.setName(c.getName());
-                newClientRec.setEmail(c.getEmail());
-                newClientRec.setPhone(c.getPhone());
-
-                List<AccountRecord> accountList = new ArrayList<>();
-                for (Account a : c.getAccounts()) {
-                    AccountRecord accountRec = new AccountRecord();
-                    accountRec.setId(a.getId());
-                    accountRec.setNumber(a.getNumber());
-                    accountRec.setType(a.getType());
-                    accountList.add(accountRec);
-                }
-
-                newClientRec.setAccounts(c.getAccounts());
+                ClientRecord newClientRec = impresiones.createClientRecord(c);
                 clientList.add(newClientRec);
             }
-
             return Response.ok(clientList).build();
-
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -182,9 +147,6 @@ public class HelloResource {
         }
     }
 
-
-
-
     @GET
     @Produces("text/plain")
     @Path("/paypal")
@@ -192,44 +154,20 @@ public class HelloResource {
         ClientService clientService=new ClientService(em);
         ProductService productService=new ProductService(em);
         if ((clientID ==0 || Products_ids == null) || (Products_ids==null && clientID==0)) {
-
-            return null;
+            return "http://localhost:8080/PayMeth-1.0-SNAPSHOT/api/app/paypal?Client_ID=25656846&Products_ids=752&Products_ids=652";
         }else {
             Client client= clientService.findByID(clientID);
-            ClientRecord newClientRec = new ClientRecord();
-            newClientRec.setCi(client.getCi());
-            newClientRec.setName(client.getName());
-            newClientRec.setEmail(client.getEmail());
-            newClientRec.setPhone(client.getPhone());
-
-            List<AccountRecord> accountList = new ArrayList<>();
-            for (Account a : client.getAccounts()) {
-                AccountRecord accountRec = new AccountRecord();
-                accountRec.setId(a.getId());
-                accountRec.setNumber(a.getNumber());
-                accountRec.setType(a.getType());
-                accountList.add(accountRec);
-            }
-            newClientRec.setAccounts(client.getAccounts());
-
-
+            ClientRecord newClientRec = impresiones.createClientRecord(client);
             List<Product> products = new ArrayList<>();
             for (Integer id : Products_ids) {
                 products.add(productService.findByID(id));
             }
-            List<ProductRecord> productRecords = new ArrayList<>();
-            for (Product p : products) {
-                ProductRecord newProductRec = new ProductRecord();
-                newProductRec.setProductID(p.getId());
-                newProductRec.setProductName(p.getName());
-                newProductRec.setQuantity(p.getQuantity());
-                newProductRec.setPrice(p.getPrice());
-                // Agregar el nuevo ProductRecord a la lista
-                productRecords.add(newProductRec);
-            }
+            List<ProductRecord> productList = impresiones.createProductRecord(products);
 
             invoiceRec.setClient_Record(newClientRec);
-            invoiceRec.setProduct_RecordList(productRecords);
+            invoiceRec.setProduct_RecordList(productList);
+
+
             return paypalPay.sendPayNotify(invoiceRec);
         }
     }
