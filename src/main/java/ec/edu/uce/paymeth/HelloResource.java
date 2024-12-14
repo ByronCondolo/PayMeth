@@ -1,11 +1,8 @@
 package ec.edu.uce.paymeth;
-
-import ec.edu.uce.Records.AccountRecord;
-import ec.edu.uce.Records.ClientRecord;
-import ec.edu.uce.Records.ProductRecord;
+import ec.edu.uce.Records.*;
+import ec.edu.uce.Records.Record;
 import ec.edu.uce.interfaces.IPay;
 import ec.edu.uce.interfaces.QualifierPayment;
-import ec.edu.uce.Records.Record;
 import ec.edu.uce.jpa.*;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -17,13 +14,16 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Path("/app")
 public class HelloResource {
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
+    private EntityManager em = emf.createEntityManager();
+
+
 
     @Inject
     @QualifierPayment("paymentRec")
@@ -40,6 +40,10 @@ public class HelloResource {
     @Inject
     @QualifierPayment("accountRec")
     AccountRecord accountRecord;
+
+    @Inject
+    @QualifierPayment("invoiceRec")
+    InvoiceRecords invoiceRec;
 
     @Inject
     @QualifierPayment("card")
@@ -66,10 +70,7 @@ public class HelloResource {
     public Response product(@QueryParam("name") String name,
                             @QueryParam("quantity") int quantity,
                             @QueryParam("price") double price) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
-        EntityManager em = emf.createEntityManager();
         ProductService productService = new ProductService(em);
-
         try {
             Product product = new Product();
             product.setName(name != null ? name : "Jamon");
@@ -125,9 +126,6 @@ public class HelloResource {
             @QueryParam("phone") String phone,
             @QueryParam("bank_account") String bank_account,
             @QueryParam("bank_type") String bank_type) {
-
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
-        EntityManager em = emf.createEntityManager();
 
         ClientService clientService = new ClientService(em);
         try {
@@ -190,17 +188,46 @@ public class HelloResource {
     @GET
     @Produces("text/plain")
     @Path("/paypal")
-    public String SMSNotification() {
-        return paypalPay.sendPayNotify(paymentRec, "paypal pay");
+    public String paypal(@QueryParam("Client_ID") int clientID,@QueryParam("Products_ids") List<Integer> Products_ids) {
+        ClientService clientService=new ClientService(em);
+        ProductService productService=new ProductService(em);
+        if ((clientID ==0 || Products_ids == null) || (Products_ids==null && clientID==0)) {
 
+            return null;
+        }else {
+            Client client= clientService.findByID(clientID);
+            ClientRecord newClientRec = new ClientRecord();
+            newClientRec.setCi(client.getCi());
+            newClientRec.setName(client.getName());
+            newClientRec.setEmail(client.getEmail());
+            newClientRec.setPhone(client.getPhone());
+
+            List<AccountRecord> accountList = new ArrayList<>();
+            for (Account a : client.getAccounts()) {
+                AccountRecord accountRec = new AccountRecord();
+                accountRec.setId(a.getId());
+                accountRec.setNumber(a.getNumber());
+                accountRec.setType(a.getType());
+                accountList.add(accountRec);
+            }
+            newClientRec.setAccounts(client.getAccounts());
+
+
+            List<Product> products = new ArrayList<>();
+            for (Integer id : Products_ids) {
+                products.add(productService.findByID(id));
+            }
+            return paypalPay.sendPayNotify(paymentRec, "paypal pay"+newClientRec.toString());
+        }
     }
 
     @GET
     @Produces("text/plain")
     @Path("/transfer")
     public String pushNotification() {
-        return transferPay.sendPayNotify(paymentRec,"transfer pay");
 
+
+        return transferPay.sendPayNotify(paymentRec,"transfer pay");
     }
 
 
