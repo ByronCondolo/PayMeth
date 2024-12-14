@@ -217,7 +217,20 @@ public class HelloResource {
             for (Integer id : Products_ids) {
                 products.add(productService.findByID(id));
             }
-            return paypalPay.sendPayNotify(paymentRec, "paypal pay"+newClientRec.toString());
+            List<ProductRecord> productRecords = new ArrayList<>();
+            for (Product p : products) {
+                ProductRecord newProductRec = new ProductRecord();
+                newProductRec.setProductID(p.getId());
+                newProductRec.setProductName(p.getName());
+                newProductRec.setQuantity(p.getQuantity());
+                newProductRec.setPrice(p.getPrice());
+                // Agregar el nuevo ProductRecord a la lista
+                productRecords.add(newProductRec);
+            }
+
+            invoiceRec.setClient_Record(newClientRec);
+            invoiceRec.setProduct_RecordList(productRecords);
+            return paypalPay.sendPayNotify(invoiceRec);
         }
     }
 
@@ -227,7 +240,7 @@ public class HelloResource {
     public String pushNotification() {
 
 
-        return transferPay.sendPayNotify(paymentRec,"transfer pay");
+        return null;
     }
 
 
