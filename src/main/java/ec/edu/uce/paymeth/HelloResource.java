@@ -8,6 +8,8 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -135,43 +137,118 @@ public class HelloResource {
     @GET
     @Produces("text/plain")
     @Path("/paypal")
-    public String paypal(@QueryParam("Client_ID") int clientID,@QueryParam("Products_ids") List<Integer> Products_ids) {
-        if ((clientID ==0 || Products_ids == null) || (Products_ids==null && clientID==0)) {
-            Invoice invoice=new Invoice();
-            invoice.setDate(null);
-            invoice.setMethod_pay("paypal");
-            invoice.setClient(clientService.findByID(25));
-            invoiceService.createInvoice(invoice);
-
-
-            return "http://localhost:8080/PayMeth-1.0-SNAPSHOT/api/app/paypal?Client_ID=25656846&Products_ids=752&Products_ids=652";
+    public String paypal(@QueryParam("Client_ID") int clientID,
+                         @QueryParam("Products_ids") List<Integer> Products_ids) {
+        Invoice invoice = new Invoice();
+        Client client = clientService.findByID(clientID);
+        if (client == null) {
+            client = clientService.findByID(95);
+        }
+        invoice.setClient(client);
+        invoice.setDate(new Date());
+        ClientRecord newClientRec = impresiones.createClientRecord(invoice.getClient());
+        List<Product> products = new ArrayList<>();
+        double ammount=0;
+        if (Products_ids.isEmpty()) {
+            products.add(productService.findByID(802));
+            products.add(productService.findByID(852));
+            ammount += productService.findByID(802).getPrice();
+            ammount += productService.findByID(852).getPrice();
         }else {
-            Client client= clientService.findByID(clientID);
-            ClientRecord newClientRec = impresiones.createClientRecord(client);
-            List<Product> products = new ArrayList<>();
             for (Integer id : Products_ids) {
                 products.add(productService.findByID(id));
+                ammount += productService.findByID(id).getPrice();
             }
-            List<ProductRecord> productList = impresiones.createProductRecord(products);
-
-            invoiceRec.setClient_Record(newClientRec);
-            invoiceRec.setProduct_RecordList(productList);
-
-
-            return paypalPay.sendPayNotify(invoiceRec);
         }
-    }
+        invoice.setTotal_purchase_value(ammount);
+        List<ProductRecord> productList = impresiones.createProductRecord(products);
+        invoiceRec.setClient_Record(newClientRec);
+        invoiceRec.setProduct_RecordList(productList);
+        invoiceRec.setAmount_to_pay(ammount);
+        invoiceRec.setDate(invoice.getDate());
+        invoiceRec.setId(invoice.getId());//ingresar el id despues de persistir en caso de tener un id generado automaticamente
+        String msg = paypalPay.sendPayNotify(invoiceRec);
+        invoice.setMethod_pay(invoiceRec.getMethod_pay());
+        invoiceService.createInvoice(invoice);
+        return msg;
+        }
 
     @GET
     @Produces("text/plain")
+    @Path("/card")
+    public String card(@QueryParam("Client_ID") int clientID,
+                         @QueryParam("Products_ids") List<Integer> Products_ids) {
+        Invoice invoice = new Invoice();
+        Client client = clientService.findByID(clientID);
+        if (client == null) {
+            client = clientService.findByID(95);
+        }
+        invoice.setClient(client);
+        invoice.setDate(new Date());
+        ClientRecord newClientRec = impresiones.createClientRecord(invoice.getClient());
+        List<Product> products = new ArrayList<>();
+        double ammount = 0;
+        if (Products_ids.isEmpty()) {
+            products.add(productService.findByID(802));
+            products.add(productService.findByID(852));
+            ammount += productService.findByID(802).getPrice();
+            ammount += productService.findByID(852).getPrice();
+        }else {
+            for (Integer id : Products_ids) {
+                products.add(productService.findByID(id));
+                ammount += productService.findByID(id).getPrice();
+            }
+        }
+        invoice.setTotal_purchase_value(ammount);
+        List<ProductRecord> productList = impresiones.createProductRecord(products);
+        invoiceRec.setClient_Record(newClientRec);
+        invoiceRec.setProduct_RecordList(productList);
+        invoiceRec.setAmount_to_pay(ammount);
+        invoiceRec.setDate(invoice.getDate());
+        invoiceRec.setId(invoice.getId());//ingresar el id despues de persistir en caso de tener un id generado automaticamente
+        String msg = cardPay.sendPayNotify(invoiceRec);
+        invoice.setMethod_pay(invoiceRec.getMethod_pay());
+        invoiceService.createInvoice(invoice);
+        return msg;
+    }
+    @GET
+    @Produces("text/plain")
     @Path("/transfer")
-    public String pushNotification() {
-
-
-        return null;
+    public String transfer(@QueryParam("Client_ID") int clientID,
+                         @QueryParam("Products_ids") List<Integer> Products_ids) {
+        Invoice invoice = new Invoice();
+        Client client = clientService.findByID(clientID);
+        if (client == null) {
+            client = clientService.findByID(95);
+        }
+        invoice.setClient(client);
+        invoice.setDate(new Date());
+        ClientRecord newClientRec = impresiones.createClientRecord(invoice.getClient());
+        List<Product> products = new ArrayList<>();
+        double ammount = 0;
+        if (Products_ids.isEmpty()){
+            products.add(productService.findByID(802));
+            products.add(productService.findByID(852));
+            ammount += productService.findByID(802).getPrice();
+            ammount += productService.findByID(852).getPrice();
+        }else {
+            for (Integer id : Products_ids) {
+                products.add(productService.findByID(id));
+                ammount += productService.findByID(id).getPrice();
+            }
+        }
+        invoice.setTotal_purchase_value(ammount);
+        List<ProductRecord> productList = impresiones.createProductRecord(products);
+        invoiceRec.setClient_Record(newClientRec);
+        invoiceRec.setProduct_RecordList(productList);
+        invoiceRec.setAmount_to_pay(ammount);
+        invoiceRec.setDate(invoice.getDate());
+        invoiceRec.setId(invoice.getId());//ingresar el id despues de persistir en caso de tener un id generado automaticamente
+        String msg = transferPay.sendPayNotify(invoiceRec);
+        invoice.setMethod_pay(invoiceRec.getMethod_pay());
+        invoiceService.createInvoice(invoice);
+        return msg;
     }
 
-
-
-}
+    }
 

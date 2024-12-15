@@ -16,7 +16,6 @@ public class InvoiceService {
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("paymeth");
 
     public InvoiceService() {
-
         this.em = emf.createEntityManager();
     }
 

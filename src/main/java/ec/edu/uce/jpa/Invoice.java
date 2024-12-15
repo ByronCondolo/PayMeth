@@ -16,8 +16,17 @@ public class Invoice {
     private Date date;
     @Column(name = "invoice_method_pay")
     private String method_pay;
-
+    @Column(name = "invoice_total_purchase_value")
+    private double total_purchase_value;
     public Invoice() {
+    }
+
+    public double getTotal_purchase_value() {
+        return total_purchase_value;
+    }
+
+    public void setTotal_purchase_value(double total_purchase_value) {
+        this.total_purchase_value = total_purchase_value;
     }
 
     @ManyToOne

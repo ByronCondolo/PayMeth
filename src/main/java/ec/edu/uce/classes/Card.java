@@ -24,6 +24,7 @@ public class Card implements IPay {
     @Override
     public String sendPayNotify(InvoiceRecords invoiceRecords) {
 
+        invoiceRecords.setMethod_pay(getClass().getSimpleName());
         return invoiceRecords.getdata();
     }
 
