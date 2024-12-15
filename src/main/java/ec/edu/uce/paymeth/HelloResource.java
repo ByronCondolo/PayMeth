@@ -31,10 +31,6 @@ public class HelloResource {
 
 
     @Inject
-    @QualifierPayment("paymentRec")
-    Record paymentRec;
-
-    @Inject
     @QualifierPayment("productRec")
     ProductRecord productRec;
 
