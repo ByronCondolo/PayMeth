@@ -68,9 +68,9 @@ public class HelloResource {
                             @QueryParam("quantity") int quantity,
                             @QueryParam("price") double price) {
             Product product = new Product();
-            product.setName(name != null ? name : "Jamon");
-            product.setQuantity(quantity !=0 ? quantity : 12);
-            product.setPrice(price != 0 ? price : 12.23);
+            product.setName(name != null ? name : "Pavo");
+            product.setQuantity(quantity !=0 ? quantity : 43);
+            product.setPrice(price != 0 ? price : 24.50);
             productService.createProduct(product);
 
             // Buscar todos los productos
@@ -153,6 +153,9 @@ public class HelloResource {
                 products.add(productService.findByID(id));
                 ammount += productService.findByID(id).getPrice();
             }
+            for (Product p : products){
+                p.setQuantity(1);
+            }
         }
         invoice.setTotal_purchase_value(ammount);
         List<ProductRecord> productList = impresiones.createProductRecord(products);
@@ -160,10 +163,10 @@ public class HelloResource {
         invoiceRec.setProduct_RecordList(productList);
         invoiceRec.setAmount_to_pay(ammount);
         invoiceRec.setDate(invoice.getDate());
-        invoiceRec.setId(invoice.getId());//ingresar el id despues de persistir en caso de tener un id generado automaticamente
+        invoiceService.createInvoice(invoice);
+        invoiceRec.setId(invoice.getId());//ingresar el id despues de persistir en caso de tener un id generado automaticamente //investigar una forma para recuperar el id : opcion id no incremental si no asignado
         String msg = paypalPay.sendPayNotify(invoiceRec);
         invoice.setMethod_pay(invoiceRec.getMethod_pay());
-        invoiceService.createInvoice(invoice);
         return msg;
         }
 
