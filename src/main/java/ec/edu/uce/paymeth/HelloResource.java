@@ -1,6 +1,5 @@
 package ec.edu.uce.paymeth;
 import ec.edu.uce.Records.*;
-import ec.edu.uce.Records.Record;
 import ec.edu.uce.interfaces.IPay;
 import ec.edu.uce.interfaces.QualifierPayment;
 import ec.edu.uce.jpa.*;
@@ -9,7 +8,6 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
