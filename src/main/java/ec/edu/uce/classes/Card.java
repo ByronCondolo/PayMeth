@@ -10,16 +10,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 @QualifierPayment("card")
 public class Card implements IPay {
-
-    @PostConstruct
-    public void init() {
-        System.out.println("Card pay notification init");
-    }
-    @PreDestroy
-    public void destroy() {
-        System.out.println("Card pay notification destroy");
-    }
-
     @Override
     public String sendPayNotify(InvoiceRecords invoiceRecords) {
 

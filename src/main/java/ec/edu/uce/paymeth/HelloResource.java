@@ -103,7 +103,7 @@ public class HelloResource {
             @QueryParam("bank_type") String bank_type) {
 
             Client client = new Client();
-            client.setCi(ci != null ? ci : 95);
+            client.setCi(ci != null ? ci : 1123435235);
             client.setName(name != null ? name : "Maria");
             client.setEmail(email != null ? email : "example3@uce.com");
             client.setPhone(phone != null ? phone : "11565484");
@@ -136,7 +136,7 @@ public class HelloResource {
         Invoice invoice = new Invoice();
         Client client = clientService.findByID(clientID);
         if (client == null) {
-            client = clientService.findByID(95);
+            client = clientService.findByID(1723647178);
         }
         invoice.setClient(client);
         invoice.setDate(new Date());
@@ -144,10 +144,10 @@ public class HelloResource {
         List<Product> products = new ArrayList<>();
         double ammount=0;
         if (Products_ids.isEmpty()) {
-            products.add(productService.findByID(802));
-            products.add(productService.findByID(852));
-            ammount += productService.findByID(802).getPrice();
-            ammount += productService.findByID(852).getPrice();
+            products.add(productService.findByID(1));
+            products.add(productService.findByID(2));
+            ammount += productService.findByID(1).getPrice();
+            ammount += productService.findByID(2).getPrice();
         }else {
             for (Integer id : Products_ids) {
                 products.add(productService.findByID(id));
@@ -178,22 +178,25 @@ public class HelloResource {
         Invoice invoice = new Invoice();
         Client client = clientService.findByID(clientID);
         if (client == null) {
-            client = clientService.findByID(95);
+            client = clientService.findByID(1723647178);
         }
         invoice.setClient(client);
         invoice.setDate(new Date());
         ClientRecord newClientRec = impresiones.createClientRecord(invoice.getClient());
         List<Product> products = new ArrayList<>();
-        double ammount = 0;
+        double ammount=0;
         if (Products_ids.isEmpty()) {
-            products.add(productService.findByID(802));
-            products.add(productService.findByID(852));
-            ammount += productService.findByID(802).getPrice();
-            ammount += productService.findByID(852).getPrice();
+            products.add(productService.findByID(1));
+            products.add(productService.findByID(2));
+            ammount += productService.findByID(1).getPrice();
+            ammount += productService.findByID(2).getPrice();
         }else {
             for (Integer id : Products_ids) {
                 products.add(productService.findByID(id));
                 ammount += productService.findByID(id).getPrice();
+            }
+            for (Product p : products){
+                p.setQuantity(1);
             }
         }
         invoice.setTotal_purchase_value(ammount);
@@ -202,10 +205,10 @@ public class HelloResource {
         invoiceRec.setProduct_RecordList(productList);
         invoiceRec.setAmount_to_pay(ammount);
         invoiceRec.setDate(invoice.getDate());
-        invoiceRec.setId(invoice.getId());//ingresar el id despues de persistir en caso de tener un id generado automaticamente
+        invoiceService.createInvoice(invoice);
+        invoiceRec.setId(invoice.getId());//ingresar el id despues de persistir en caso de tener un id generado automaticamente //investigar una forma para recuperar el id : opcion id no incremental si no asignado
         String msg = cardPay.sendPayNotify(invoiceRec);
         invoice.setMethod_pay(invoiceRec.getMethod_pay());
-        invoiceService.createInvoice(invoice);
         return msg;
     }
     @GET
@@ -216,22 +219,25 @@ public class HelloResource {
         Invoice invoice = new Invoice();
         Client client = clientService.findByID(clientID);
         if (client == null) {
-            client = clientService.findByID(95);
+            client = clientService.findByID(1723647178);
         }
         invoice.setClient(client);
         invoice.setDate(new Date());
         ClientRecord newClientRec = impresiones.createClientRecord(invoice.getClient());
         List<Product> products = new ArrayList<>();
-        double ammount = 0;
-        if (Products_ids.isEmpty()){
-            products.add(productService.findByID(802));
-            products.add(productService.findByID(852));
-            ammount += productService.findByID(802).getPrice();
-            ammount += productService.findByID(852).getPrice();
+        double ammount=0;
+        if (Products_ids.isEmpty()) {
+            products.add(productService.findByID(1));
+            products.add(productService.findByID(2));
+            ammount += productService.findByID(1).getPrice();
+            ammount += productService.findByID(2).getPrice();
         }else {
             for (Integer id : Products_ids) {
                 products.add(productService.findByID(id));
                 ammount += productService.findByID(id).getPrice();
+            }
+            for (Product p : products){
+                p.setQuantity(1);
             }
         }
         invoice.setTotal_purchase_value(ammount);
@@ -240,11 +246,12 @@ public class HelloResource {
         invoiceRec.setProduct_RecordList(productList);
         invoiceRec.setAmount_to_pay(ammount);
         invoiceRec.setDate(invoice.getDate());
-        invoiceRec.setId(invoice.getId());//ingresar el id despues de persistir en caso de tener un id generado automaticamente
+        invoiceService.createInvoice(invoice);
+        invoiceRec.setId(invoice.getId());//ingresar el id despues de persistir en caso de tener un id generado automaticamente //investigar una forma para recuperar el id : opcion id no incremental si no asignado
         String msg = transferPay.sendPayNotify(invoiceRec);
         invoice.setMethod_pay(invoiceRec.getMethod_pay());
-        invoiceService.createInvoice(invoice);
         return msg;
+
     }
 
     }
