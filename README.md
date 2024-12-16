@@ -29,4 +29,4 @@ Este comando crea un contenedor PostgreSQL llamado postgreSQL y asigna persisten
 Este comando migra el contenido del archivo `paymentDB.sql` a la base de datos paymentDB dentro del contenedor.
 
 **Nota: **
-En caso de existir la carpetaa db-data eliminarla antes dee hacer la importacion de la base de datos
+En caso de existir la carpeta db-data eliminarla antes dee hacer la importacion de la base de datos
