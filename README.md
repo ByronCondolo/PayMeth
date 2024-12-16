@@ -22,6 +22,9 @@
 
 Este comando crea un contenedor PostgreSQL llamado postgreSQL y asigna persistencia de datos mediante un volumen.
 
+**Nota: **
+En caso de existir la carpetaa db-data eliminarla antes dee hacer la importacion de la base de datos
+
 4. **Migrar la base de datos al contenedor**
    Ejecuta el siguiente comando :  
    ```bash
