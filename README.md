@@ -27,3 +27,6 @@ Este comando crea un contenedor PostgreSQL llamado postgreSQL y asigna persisten
    ```bash
    Get-Content ${PWD}\paymentDB.sql | docker exec -i postgreSQL psql -U postgres -d paymentDB
 Este comando migra el contenido del archivo `paymentDB.sql` a la base de datos paymentDB dentro del contenedor.
+
+**Nota: **
+En caso de existir la carpeta db-data eliminarla antes dee hacer la importacion de la base de datos
